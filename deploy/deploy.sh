@@ -36,8 +36,8 @@ docker build -t vulnerableapp .
 
 ## Stop and remove existing container (if any)
 #echo "Stopping and removing existing container..."
-#docker stop $APP_NAME || true
-#docker rm $APP_NAME || true
+#docker stop vulnerableapp || true
+#docker rm vulnerableapp || true
 
 # Run new container
 echo "Starting new container..."

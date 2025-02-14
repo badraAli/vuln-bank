@@ -139,12 +139,15 @@ def login():
         password = request.form['password']
         
         # SQL Injection vulnerability
-        conn = sqlite3.connect('bank.db')
-        c = conn.cursor()
-        query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
-        c.execute(query)
-        user = c.fetchone()
-        conn.close()
+        try:
+            conn = sqlite3.connect('bank.db')
+            c = conn.cursor()
+            query = f"SELECT * FROM users WHERE username='{username}' AND password='{password}'"
+            c.execute(query)
+            user = c.fetchone()
+            conn.close()
+        except Exception as e:
+            return jsonify({'error': str(e)}), 500
         
         if user:
             session['user_id'] = user[0]
