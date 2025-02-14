@@ -18,7 +18,7 @@ chmod 400 deploy_key.pem
 # Build Docker image  
 echo "Building Docker image..."
 docker build -t $APP_NAME .
-
+   
 # Save image to tar
 echo "Saving Docker image..."
 docker save $APP_NAME > app.tar
