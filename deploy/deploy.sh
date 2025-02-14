@@ -30,33 +30,18 @@ ssh -i deploy_key.pem \
 # Navigate to the project directory
 cd /home/ubuntu/vulnerable-bank
 
-# Install Docker if not already installed
-if ! command -v docker &> /dev/null; then
-    echo "Installing Docker..."
-    sudo apt-get update
-    sudo apt-get install -y docker.io
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    sudo usermod -aG docker ubuntu
-    echo "Docker installed successfully."
-fi
-
 # Build Docker image
 echo "Building Docker image..."
 docker build -t $APP_NAME .
 
-# Stop and remove existing container (if any)
+## Stop and remove existing container (if any)
 echo "Stopping and removing existing container..."
 docker stop $APP_NAME || true
 docker rm $APP_NAME || true
 
 # Run new container
 echo "Starting new container..."
-docker run -d \
-    --name $APP_NAME \
-    -p 5000:5000 \
-    --restart unless-stopped \
-    $APP_NAME
+docker run -d -p 5000:5000 --name $APP_NAME $APP_NAME:latest
 EOF
 
 # Cleanup
