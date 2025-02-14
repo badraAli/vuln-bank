@@ -15,7 +15,7 @@ APP_NAME="vulnerable-bank"
 echo "$SSH_KEY" > deploy_key.pem
 chmod 400 deploy_key.pem
 
-# Build Docker image
+# Build Docker image  
 echo "Building Docker image..."
 docker build -t $APP_NAME .
 
