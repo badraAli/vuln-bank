@@ -40,7 +40,7 @@ ssh -i deploy_key.pem \
      docker rm $APP_NAME || true && \
      docker run -d \
        --name $APP_NAME \
-       -p 80:5000 \
+       -p 5000:5000 \
        --restart unless-stopped \
        $APP_NAME"
 
