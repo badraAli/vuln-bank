@@ -41,7 +41,7 @@ docker build -t vulnerableapp .
 
 # Run new container
 echo "Starting new container..."
-docker run -d -p 5000:5000 --name vuln-app vulnerableapp:latest
+docker run -d -p 5555:5000 --name vuln-app vulnerableapp:latest
 EOF
 
 # Cleanup
