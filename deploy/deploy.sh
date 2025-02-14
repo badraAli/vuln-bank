@@ -12,7 +12,7 @@ SSH_KEY="${SSH_PRIVATE_KEY}"
 APP_NAME="vulnerable-bank"
 
 # Save SSH key
-echo "$SSH_KEY" > deploy_key.pem
+echo "$SSH_KEY" > deploy_key.pem  
 chmod 400 deploy_key.pem
 
 # Build Docker image  
