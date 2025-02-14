@@ -32,16 +32,16 @@ cd /home/ubuntu/vulnerable-bank
 
 # Build Docker image
 echo "Building Docker image..."
-docker build -t $APP_NAME .
+docker build -t vulnerableapp .
 
 ## Stop and remove existing container (if any)
-echo "Stopping and removing existing container..."
-docker stop $APP_NAME || true
-docker rm $APP_NAME || true
+#echo "Stopping and removing existing container..."
+#docker stop $APP_NAME || true
+#docker rm $APP_NAME || true
 
 # Run new container
 echo "Starting new container..."
-docker run -d -p 5000:5000 --name $APP_NAME $APP_NAME:latest
+docker run -d -p 5000:5000 --name vuln-app vulnerableapp:latest
 EOF
 
 # Cleanup
