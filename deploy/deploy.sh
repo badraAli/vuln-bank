@@ -10,41 +10,41 @@ echo "Starting deployment..."
 EC2_HOST="${EC2_HOST}"
 SSH_KEY="${SSH_PRIVATE_KEY}"
 APP_NAME="vulnerable-bank"
-PROJECT_DIR="/home/ubuntu/$APP_NAME"  # Directory on the EC2 instance to store the project
 
 # Save SSH key
 echo "$SSH_KEY" > deploy_key.pem
-chmod 400 deploy_key.pem
+chmod 600 deploy_key.pem
 
-# Copy project files to EC2
-echo "Copying project files to EC2..."
+# Build Docker image
+echo "Building Docker image..."
+docker build -t $APP_NAME .
+
+# Save image to tar
+echo "Saving Docker image..."
+docker save $APP_NAME > app.tar
+
+# Copy files to EC2
+echo "Copying files to EC2..."
 scp -i deploy_key.pem \
     -o StrictHostKeyChecking=no \
-    -r ./* ubuntu@${EC2_HOST}:${PROJECT_DIR}/
+    app.tar \
+    ubuntu@${EC2_HOST}:~/
 
 # Deploy on EC2
 echo "Deploying on EC2..."
 ssh -i deploy_key.pem \
     -o StrictHostKeyChecking=no \
-    ubuntu@${EC2_HOST} << 'EOF'
-# Navigate to the project directory
-cd /home/ubuntu/vulnerable-bank
-
-# Build Docker image
-echo "Building Docker image..."
-docker build -t vulnerableapp .
-
-## Stop and remove existing container (if any)
-#echo "Stopping and removing existing container..."
-#docker stop vulnerableapp || true
-#docker rm vulnerableapp || true
-
-# Run new container
-echo "Starting new container..."
-docker run -d -p 5555:5000 --name vuln-app vulnerableapp:latest
-EOF
+    ubuntu@${EC2_HOST} \
+    "docker load < app.tar && \
+     docker stop $APP_NAME || true && \
+     docker rm $APP_NAME || true && \
+     docker run -d \
+       --name $APP_NAME \
+       -p 80:5000 \
+       --restart unless-stopped \
+       $APP_NAME"
 
 # Cleanup
-rm deploy_key.pem
+rm deploy_key.pem app.tar
 
 echo "Deployment completed successfully!"
