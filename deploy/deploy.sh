@@ -34,16 +34,32 @@ scp -i deploy_key.pem \
 echo "Deploying on EC2..."
 ssh -i deploy_key.pem \
     -o StrictHostKeyChecking=no \
-    ubuntu@${EC2_HOST} \
-    "docker load < app.tar && \
-     docker stop $APP_NAME || true && \
-     docker rm $APP_NAME || true && \
-     docker run -d \
-       --name $APP_NAME \
-       -p 80:5000 \
-       --restart unless-stopped \
-       $APP_NAME"
+    ubuntu@${EC2_HOST} << 'EOF'
+# Install Docker if not already installed
+if ! command -v docker &> /dev/null; then
+    echo "Installing Docker..."
+    sudo apt-get update
+    sudo apt-get install -y docker.io
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker ubuntu
+    echo "Docker installed successfully."
+fi
 
+# Load Docker image
+docker load < app.tar
+
+# Stop and remove existing container (if any)
+docker stop $APP_NAME || true
+docker rm $APP_NAME || true
+
+# Run new container
+docker run -d \
+    --name $APP_NAME \
+    -p 80:5000 \
+    --restart unless-stopped \
+    $APP_NAME
+EOF
 # Cleanup
 rm deploy_key.pem app.tar
 
